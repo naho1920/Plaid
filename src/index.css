@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f9fafb;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Animación de entrada entre pasos */
+@keyframes stepFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.step-animate {
+  animation: stepFadeIn 230ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Animación del check de éxito */
+@keyframes checkBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  60% {
+    transform: scale(1.12);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.check-bounce {
+  animation: checkBounce 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Scrollbar sutil para el grid de bancos */
+.bank-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+.bank-scroll::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 2px;
+}
+.bank-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
