@@ -33,7 +33,8 @@ const progressConfig = {
   2: { segments: 3, active: 1 },
   3: { segments: 3, active: 2 },
   4: { segments: 3, active: 2 },
-  6: { segments: 3, active: 3 },
+  5: { segments: 3, active: 3 },
+  6: { segments: 0, active: 0 },
 }
 
 // ─── TOP NAV (barra de progreso + flecha retroceso) ───────────────────────────
@@ -42,7 +43,7 @@ function TopNav({ step, onBack }) {
   const { segments, active } = progressConfig[step] ?? { segments: 0, active: 0 }
   if (segments === 0) return null
 
-  const canGoBack = [2, 3, 4].includes(step)
+  const canGoBack = [2, 3, 4, 5].includes(step)
 
   return (
     <div className="flex items-center gap-2 mb-7">
@@ -401,23 +402,184 @@ function Step4({ bank, accountChecked, setAccountChecked, onContinue }) {
   )
 }
 
-// ─── STEP 6 — SUCCESS ────────────────────────────────────────────────────────
+// ─── STEP 5 — TRANSFER AMOUNT ────────────────────────────────────────────────
 
-function Step6({ onRestart }) {
+function Step5({ bank, amount, setAmount, onTransfer }) {
+  const numericAmount = parseFloat(amount) || 0
+  const canTransfer = numericAmount > 0
+
   return (
-    <div className="flex flex-col h-full items-center justify-center">
-      {/* Ícono check animado */}
+    <div className="flex flex-col h-full">
+      <h2 className="text-lg font-semibold text-gray-900 text-center mb-2">
+        Transfer Amount
+      </h2>
+      <p className="text-sm text-center text-gray-500 mb-6 leading-relaxed px-2">
+        Enter the amount you'd like to transfer from your linked account
+      </p>
+
+      {/* Account info */}
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-5 check-bounce"
+        className="border rounded-xl overflow-hidden mb-8"
+        style={{ borderColor: '#E5E7EB' }}
+      >
+        {/* From */}
+        <div className="flex items-center gap-3 p-4">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+            style={{ backgroundColor: '#EBF9FA' }}
+          >
+            <Building2 size={20} style={{ color: '#0096A8' }} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-gray-400">From</p>
+            <p className="text-sm font-medium text-gray-900 truncate">{bank?.name}</p>
+            <p className="text-xs text-gray-500">Checking • 8492</p>
+          </div>
+          <div className="text-right shrink-0">
+            <p className="text-xs text-gray-400">Available</p>
+            <p className="text-sm font-semibold text-gray-900">$3,815.27</p>
+          </div>
+        </div>
+        <div className="h-px mx-4" style={{ backgroundColor: '#F3F4F6' }} />
+        {/* To */}
+        <div className="flex items-center gap-3 p-4">
+          <div
+            className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+            style={{ backgroundColor: '#F3F4F6' }}
+          >
+            <img
+              src="/Logo pantalla 1 paso 1.png"
+              alt="Kaito"
+              className="w-6 h-6 rounded-lg object-contain"
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-gray-400">To</p>
+            <p className="text-sm font-medium text-gray-900">Kaito</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Amount input — centrado y grande */}
+      <div className="flex flex-col items-center mb-2">
+        <p className="text-xs text-gray-400 mb-3 uppercase tracking-wide">Amount</p>
+        <div className="flex items-center gap-1">
+          <span
+            className="text-4xl font-bold"
+            style={{ color: numericAmount > 0 ? '#1A1A1A' : '#D1D5DB' }}
+          >
+            $
+          </span>
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="0.00"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="text-4xl font-bold text-gray-900 outline-none bg-transparent
+                       w-44 text-left placeholder-gray-300"
+            style={{ MozAppearance: 'textfield' }}
+          />
+        </div>
+        <div
+          className="w-full h-px mt-4"
+          style={{ backgroundColor: '#E5E7EB' }}
+        />
+      </div>
+
+      <div className="flex-1" />
+
+      <button
+        onClick={canTransfer ? onTransfer : undefined}
+        className="w-full py-4 rounded-xl font-semibold text-white text-sm
+                   transition-all duration-200"
+        style={{
+          backgroundColor: canTransfer ? '#1A1A1A' : '#9CA3AF',
+          cursor: canTransfer ? 'pointer' : 'default',
+        }}
+      >
+        Transfer
+      </button>
+    </div>
+  )
+}
+
+// ─── STEP 6 — RECEIPT ────────────────────────────────────────────────────────
+
+function Step6({ bank, amount, onRestart }) {
+  const displayAmount = amount && parseFloat(amount) > 0
+    ? `$${parseFloat(amount).toFixed(2)}`
+    : '$0.00'
+
+  const today = new Date().toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  })
+
+  return (
+    <div className="flex flex-col h-full items-center">
+      {/* Check animado */}
+      <div
+        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 check-bounce"
         style={{ backgroundColor: '#EBF9FA' }}
       >
         <Check size={28} style={{ color: '#0096A8' }} strokeWidth={2.5} />
       </div>
 
-      <h2 className="text-xl font-bold text-gray-900 mb-2">Success</h2>
-      <p className="text-sm text-gray-500 text-center leading-relaxed px-6">
-        Your account has been successfully linked to Kaito
+      <h2 className="text-xl font-bold text-gray-900 mb-1">Transfer Sent!</h2>
+      <p className="text-sm text-gray-500 text-center mb-6 leading-relaxed px-4">
+        Your transfer was successfully processed
       </p>
+
+      {/* Comprobante */}
+      <div
+        className="w-full border rounded-xl overflow-hidden"
+        style={{ borderColor: '#E5E7EB' }}
+      >
+        {/* Monto destacado */}
+        <div
+          className="py-5 px-4 text-center"
+          style={{ backgroundColor: '#EBF9FA' }}
+        >
+          <p className="text-xs text-gray-500 mb-1 uppercase tracking-wide">
+            Amount transferred
+          </p>
+          <p
+            className="text-3xl font-bold"
+            style={{ color: '#0096A8' }}
+          >
+            {displayAmount}
+          </p>
+        </div>
+
+        {/* Detalles */}
+        <div className="px-4 py-3 space-y-3">
+          {[
+            { label: 'To',      value: 'Kaito' },
+            { label: 'From',    value: bank?.name ?? '—' },
+            { label: 'Account', value: 'Checking • 8492' },
+            { label: 'Date',    value: today },
+            { label: 'Status',  value: 'Completed', highlight: true },
+          ].map(({ label, value, highlight }, idx, arr) => (
+            <div key={label}>
+              <div className="flex justify-between items-center">
+                <span className="text-xs text-gray-400">{label}</span>
+                <span
+                  className="text-xs font-medium"
+                  style={{ color: highlight ? '#0096A8' : '#111827' }}
+                >
+                  {value}
+                </span>
+              </div>
+              {idx < arr.length - 1 && (
+                <div className="h-px mt-3" style={{ backgroundColor: '#F3F4F6' }} />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="flex-1" />
 
@@ -427,7 +589,7 @@ function Step6({ onRestart }) {
                    hover:opacity-90 active:opacity-75 transition-opacity"
         style={{ backgroundColor: '#1A1A1A' }}
       >
-        Continue
+        Done
       </button>
     </div>
   )
@@ -443,6 +605,7 @@ export default function App() {
   const [showPassword, setShowPassword]     = useState(false)
   const [accountChecked, setAccountChecked] = useState(false)
   const [search, setSearch]                 = useState('')
+  const [amount, setAmount]                 = useState('')
 
   function handleSelectBank(bank) {
     setSelectedBank(bank)
@@ -454,6 +617,10 @@ export default function App() {
   }
 
   function handleContinueAccounts() {
+    setStep(5)
+  }
+
+  function handleTransfer() {
     setStep(6)
   }
 
@@ -465,15 +632,17 @@ export default function App() {
     setShowPassword(false)
     setAccountChecked(false)
     setSearch('')
+    setAmount('')
   }
 
   function handleBack() {
     if (step === 2) setStep(1)
     else if (step === 3) setStep(2)
     else if (step === 4) setStep(3)
+    else if (step === 5) setStep(4)
   }
 
-  const minHeight = step === 2 ? '560px' : '520px'
+  const minHeight = step === 2 ? '560px' : step === 6 ? '580px' : '520px'
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6">
@@ -530,8 +699,21 @@ export default function App() {
             />
           )}
 
+          {step === 5 && (
+            <Step5
+              bank={selectedBank}
+              amount={amount}
+              setAmount={setAmount}
+              onTransfer={handleTransfer}
+            />
+          )}
+
           {step === 6 && (
-            <Step6 onRestart={handleRestart} />
+            <Step6
+              bank={selectedBank}
+              amount={amount}
+              onRestart={handleRestart}
+            />
           )}
         </div>
       </div>
