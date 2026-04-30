@@ -507,7 +507,7 @@ function Step5({ bank, amount, setAmount, onTransfer }) {
 
 // ─── STEP 6 — RECEIPT ────────────────────────────────────────────────────────
 
-function Step6({ bank, amount, onRestart }) {
+function Step6({ bank, amount, onDone }) {
   const displayAmount = amount && parseFloat(amount) > 0
     ? `$${parseFloat(amount).toFixed(2)}`
     : '$0.00'
@@ -584,13 +584,33 @@ function Step6({ bank, amount, onRestart }) {
       <div className="flex-1" />
 
       <button
-        onClick={onRestart}
+        onClick={onDone}
         className="w-full py-4 rounded-xl font-semibold text-white text-sm
                    hover:opacity-90 active:opacity-75 transition-opacity"
         style={{ backgroundColor: '#1A1A1A' }}
       >
         Done
       </button>
+    </div>
+  )
+}
+
+// ─── STEP 7 — TRANSFER COMPLETE ──────────────────────────────────────────────
+
+function Step7() {
+  return (
+    <div className="flex flex-col h-full items-center justify-center">
+      <img
+        src="/Logo pantalla 1 paso 1.png"
+        alt="Kaito"
+        className="w-20 h-20 rounded-2xl object-contain mb-8"
+      />
+      <h2 className="text-xl font-bold text-gray-900 mb-3 text-center">
+        Transfer complete!
+      </h2>
+      <p className="text-sm text-gray-500 text-center leading-relaxed px-6">
+        Now, please return to WhatsApp to finish the process.
+      </p>
     </div>
   )
 }
@@ -624,6 +644,10 @@ export default function App() {
     setStep(6)
   }
 
+  function handleDone() {
+    setStep(7)
+  }
+
   function handleRestart() {
     setStep(1)
     setSelectedBank(null)
@@ -642,7 +666,7 @@ export default function App() {
     else if (step === 5) setStep(4)
   }
 
-  const minHeight = step === 2 ? '560px' : step === 6 ? '580px' : '520px'
+  const minHeight = step === 2 ? '560px' : step === 6 ? '580px' : step === 7 ? '400px' : '520px'
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 sm:p-6">
@@ -712,8 +736,12 @@ export default function App() {
             <Step6
               bank={selectedBank}
               amount={amount}
-              onRestart={handleRestart}
+              onDone={handleDone}
             />
+          )}
+
+          {step === 7 && (
+            <Step7 />
           )}
         </div>
       </div>
